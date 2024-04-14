@@ -15,7 +15,7 @@ from flask_wtf.csrf import generate_csrf
 def index():
     return jsonify(message="This is the beginning of our API")
 
-@app.route('/api/v1/users/<user_id>/posts', method=['GET'])
+@app.route('/api/v1/users/<user_id>/posts', methods=['GET'])
 def posts(user_id):
     if request.method == 'GET':
         
@@ -41,7 +41,7 @@ def posts(user_id):
         return jsonify({'posts': posts_lst})
     
 
-@app.route('/api/v1/users/<user_id>/posts', method=['POST'])
+@app.route('/api/v1/users/<user_id>/posts', methods=['POST'])
 def add_post(user_id):
 
     if request.method == 'POST':
