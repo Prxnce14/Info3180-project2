@@ -1,7 +1,7 @@
 # Add any form classes for Flask-WTF here
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, TextAreaField, SelectField, PasswordField , BooleanField
+from wtforms import StringField, TextAreaField, SelectField, PasswordField 
 from wtforms.validators import InputRequired, Email, DataRequired
 
 #This is the name that will bbe displayed above your input fields
@@ -13,13 +13,6 @@ class PostForm(FlaskForm):
     photo = FileField('Profile Picture', validators=[FileRequired(), FileAllowed(['jpg','png'],'Image only!')])
     caption = TextAreaField('Caption', validators=[InputRequired()])    
 
-
-
-#forms for Likes
-
-
-
-#forms for Follows
 
 
 #Forms for users
