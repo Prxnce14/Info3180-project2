@@ -2,7 +2,7 @@ import os
 from app import app, db
 from flask import render_template, request, jsonify, send_file, redirect, url_for, flash, session, abort, send_from_directory
 from werkzeug.utils import secure_filename
-from app.models import Posts, Users, Likes
+# from app.models import Posts, Users, Likes
 from app.forms import PostForm
 from flask_wtf.csrf import generate_csrf
 

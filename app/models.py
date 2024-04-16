@@ -2,6 +2,7 @@
 
 # model for Posts
 from . import db
+from werkzeug.security import generate_password_hash
 
 class Posts(db.Model):
 
@@ -41,7 +42,7 @@ class Likes(db.Model):
         self.post_id = post_id
 
 
-#model for Follows
+# #model for Follows
 
 class Follows(db.Model):
 
@@ -56,13 +57,13 @@ class Follows(db.Model):
 
 
 
-#model for Users
+# #model for Users
 
 class Users(db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255))
+    username = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
     firstname = db.Column(db.String(255))
     lastname = db.Column(db.String(255))
@@ -75,7 +76,7 @@ class Users(db.Model):
 
     def __init__(self, uname, pword, fname, lname, em, local, bio, pphoto, create):
         self.username = uname
-        self.password = pword
+        self.password = generate_password_hash(pword)
         self.firstname = fname
         self.lastname = lname
         self.email = em
@@ -83,6 +84,21 @@ class Users(db.Model):
         self.biography = bio
         self.profile_photo = pphoto
         self.created_on = create
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2 support
+        except NameError:
+            return str(self.id)  # python 3 support
         
     def __repr__(self):
-        return '<insiders2 %r>' % self.title
+        return '<Users %r>' % self.username
