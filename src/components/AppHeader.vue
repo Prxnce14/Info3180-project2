@@ -2,7 +2,7 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">VueJS with Flask</a>
+        <a class="navbar-brand" href="/">Photogram</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -20,7 +20,13 @@
               <RouterLink to="/" class="nav-link active">Home</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/about">About</RouterLink>
+              <RouterLink class="nav-link" to="/about">Explore</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/movies/create">My Profile</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/movies">Logout</RouterLink>
             </li>
           </ul>
         </div>
