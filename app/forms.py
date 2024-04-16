@@ -9,6 +9,11 @@ from wtforms.validators import InputRequired, Email, DataRequired
 
 #forms for Posts
 
+class PostForm(FlaskForm):
+    photo = FileField('Profile Picture', validators=[FileRequired(), FileAllowed(['jpg','png'],'Image only!')])
+    caption = TextAreaField('Caption', validators=[InputRequired()])    
+
+
 
 #forms for Likes
 
@@ -31,3 +36,8 @@ class UsersForm(FlaskForm):
         DataRequired(),
         FileAllowed(['jpg', 'jpeg', 'png'], 'Only JPEG, JPG, and PNG images are allowed!')
     ])
+
+
+
+
+

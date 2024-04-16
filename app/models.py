@@ -31,8 +31,28 @@ class Posts(db.Model):
 
 #model for likes
 
+class Likes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    post_id = db.Column(db.Integer)
+    
+    def __init__(self,post_id,user_id):
+        self.user_id = user_id
+        self.post_id = post_id
+
 
 #model for Follows
+
+class Follows(db.Model):
+
+    __tablename__ = 'follows'
+    id = db.Column(db.Integer, primary_key=True)
+    follower_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    
+    def __init__(self,foll_id,user_id):
+        self.follower_id = foll_id
+        self.user_id = user_id
 
 
 
