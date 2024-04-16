@@ -1,7 +1,7 @@
 # Add any form classes for Flask-WTF here
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, TextAreaField, SelectField
+from wtforms import StringField, TextAreaField, SelectField, PasswordField , BooleanField
 from wtforms.validators import InputRequired, Email, DataRequired
 
 #This is the name that will bbe displayed above your input fields
@@ -38,6 +38,12 @@ class UsersForm(FlaskForm):
     ])
 
 
+#Login form
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    
 
 
 
