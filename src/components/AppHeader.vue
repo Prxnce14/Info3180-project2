@@ -26,7 +26,7 @@
               <RouterLink class="nav-link" to="/movies/create">My Profile</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/movies">Logout</RouterLink>
+              <RouterLink class="nav-link" to="/movies">Login</RouterLink>
             </li>
           </ul>
         </div>

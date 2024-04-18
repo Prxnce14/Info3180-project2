@@ -39,4 +39,8 @@ class LoginForm(FlaskForm):
     
 
 
+#Forms for follows
 
+class FollowForm(FlaskForm):
+    follower_id = StringField('Target', validators=[InputRequired()])
+    user_id = StringField('User', validators=[InputRequired()])

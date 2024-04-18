@@ -1,6 +1,7 @@
 # Add any model classes for Flask-SQLAlchemy here
 
 # model for Posts
+from sqlalchemy import Unicode
 from . import db
 from werkzeug.security import generate_password_hash
 
@@ -96,9 +97,12 @@ class Users(db.Model):
 
     def get_id(self):
         try:
-            return unicode(self.id)  # python 2 support
+            return Unicode(self.id)  # python 2 support
         except NameError:
             return str(self.id)  # python 3 support
+        
+    def get_username(self):
+        return self.username
         
     def __repr__(self):
         return '<Users %r>' % self.username

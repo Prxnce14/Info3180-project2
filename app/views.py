@@ -3,7 +3,7 @@ from app import app, db, login_manager
 from flask import render_template, request, jsonify, send_file, redirect, url_for, flash, session, abort, send_from_directory
 from werkzeug.utils import secure_filename
 from app.models import Posts, Users, Likes, Follows
-from app.forms import PostForm, LoginForm, UsersForm
+from app.forms import PostForm, LoginForm, UsersForm, FollowForm
 from flask_wtf.csrf import generate_csrf
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash
@@ -15,14 +15,14 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 # Routing for your application.
 ###
 
-# @app.route('/')
-# def index():
-#     return jsonify(message="This is the beginning of our API")
-
 @app.route('/')
-def home():
-    """Render website's home page."""
-    return render_template('home.html')
+def index():
+    return jsonify(message="This is the beginning of our API")
+
+# @app.route('/')
+# def home():
+#     """Render website's home page."""
+#     return render_template('home.html')
 
 
 #Endpoint for registering a user 
@@ -53,7 +53,7 @@ def create_user():
                 db.session.add(new_user)
                 db.session.commit()
 
-                flash('User Registered', 'success')
+                flash('User Successfully Registered', 'success')
 
                 return jsonify({
                     "firstname": fname,
@@ -111,8 +111,9 @@ def login():
                     flash('Logged in successfully.', 'success')
 
                     # Return JWT token to the client
-                
-                    return redirect(url_for('explore',jsonify({'access_token': access_token}) ))
+
+                    # redirect(url_for('explore',
+                    return jsonify({'access_token': access_token}) 
                         
                 else:
                     flash('Username or Password is incorrect.', 'danger')
@@ -127,16 +128,69 @@ def login():
             
 
 
-
-
+#Endpoint  for loging out a user
 
 @app.route('/api/v1/auth/logout', methods = ['POST'])
-@login_required
+@jwt_required()  # This decorator requires JWT authentication
 def logout():
-    logout_user()
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('home'))
+    if request.method == 'POST':
+        try:
+            logout_user()
+            
+            # flash('You have been logged out.', 'success')
+            
+            return jsonify({
+                "message": "User successfully logged out."
+            })
+        except Exception as e:
+            # Handle any exceptions here
+            flash({'An error occurred' : str(e)}, 400)
 
+
+
+#Endpoint for getting user details
+
+@app.route('/api/v1/users/<user_id>', methods=['GET'])
+@jwt_required()  # This decorator requires JWT authentication
+def getUserDetails(user_id):
+    if request.method == 'GET':
+        try:
+
+            user = Users.query.filter_by(id=user_id).first()
+            posts = Posts.query.filter_by(user_id = user_id).all()
+            
+            for p in posts:
+
+                    likeCount = len(Likes.query.filter_by(post_id=p.id).all())
+
+                    posts={
+                        "id": p.id,
+                        "user_id": p.user_id,
+                        "username": user.username,
+                        "photo": "/api/v1/postuploads/{}".format(p.photo),
+                        "caption": p.caption, 
+                        "created_on": p.creatd_on, 
+                        "likes": likeCount
+                    }
+
+                    data = {
+                        "id": user.id,
+                        "username": user.username,
+                        "firstname": user.first_name,
+                        "lastname": user.last_name,
+                        "email": user.email,
+                        "location": user.location,
+                        "biography": user.biography,
+                        "profile_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
+                        "joined_on": user.joined_on,
+                        "posts": [posts]
+            
+            }
+            return jsonify(data)
+        
+        except Exception as e:
+                # Handle any exceptions here
+                flash({'An error occurred' : str(e)}, 400)
 
 
 #Endpoint for adding posts to users feed
@@ -146,38 +200,41 @@ def logout():
 @jwt_required()  # This decorator requires JWT authentication
 def add_post(user_id):
 
-    current_user = get_jwt_identity()  # Get the current user from the JWT token
-
-    if current_user.get('user_id') != user_id:
-        return jsonify({'message': 'Unauthorized'}), 401
-
     if request.method == 'POST':
         try:
-            pform = PostForm()
+            current_user = get_jwt_identity()  # Get the current user from the JWT token
 
-            if pform.validate_on_submit():
-
-                us_id = user_id
-                p_caption = pform.caption.data
-                p_photo = pform.photo.data
-
-                filename = secure_filename(p_photo.filename)
-                p_photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-                post = Posts(caption=p_caption, photo=filename, user_id=us_id)
-                db.session.add(post)
-                db.session.commit()
-
-                return jsonify({
-                        "message": "Post Successfully added",
-                        "user_id": post.user_id,
-                        "photo": post.photo,
-                        "caption": post.caption
-                })
+            if current_user.get('user_id') != user_id:
+                return jsonify({'message': 'Unauthorized'}), 401
 
             else:
-                return jsonify({'errors': form_errors(pform)})
-            
+                pform = PostForm()
+
+                if pform.validate_on_submit():
+
+                    us_id = user_id
+                    p_caption = pform.caption.data
+                    p_photo = pform.photo.data
+                    created_on = datetime.datetime.now()
+
+                    filename = secure_filename(p_photo.filename)
+                    p_photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                    post = Posts(p_caption, filename, us_id, created_on)
+                    db.session.add(post)
+                    db.session.commit()
+
+                    return jsonify({
+                            "message": "Post Successfully added",
+                            "user_id": post.user_id,
+                            "photo": post.photo,
+                            "caption": post.caption,
+                            "created_on": created_on
+                    })
+
+                else:
+                    return jsonify({'errors': form_errors(pform)})
+                    
         except Exception as e:
             # Handle any exceptions here
             flash({'An error occurred' : str(e)}, 400)
@@ -189,33 +246,159 @@ def add_post(user_id):
 @jwt_required()  # This decorator requires JWT authentication
 def posts(user_id):
     if request.method == 'GET':
+
+        try:
         
-        posts_all = Posts.query.filter_by(user_id = user_id).all() 
-        user = Users.query.filter_by(id=user_id).first()
+            posts_all = Posts.query.filter_by(user_id = user_id).all() 
+            user = Users.query.filter_by(id=user_id).first()
 
-        posts_lst =[]
-        for p in posts_all:
+            posts_lst =[]
+            for p in posts_all:
 
-            likeCount = len(Likes.query.filter_by(post_id=p.id).all())
+                likeCount = len(Likes.query.filter_by(post_id=p.id).all())
 
-            posts={
-                "id": p.id,
-                "user_id": p.user_id,
-                "username": user.username, 
-                "user_profile_photo": "/api/v1/postuploads/"+ user.profile_photo,
-                "photo": "/api/v1/postuploads/"+ p.photo,
-                "caption": p.caption, 
-                "created_on": p.creatd_on, 
-                "likes": likeCount
-                }
-            posts_lst.append(posts)
-        return jsonify({'posts': posts_lst})
+                posts={
+                    "id": p.id,
+                    "user_id": p.user_id,
+                    "username": user.username,
+                    "photo": "/api/v1/postuploads/{}".format(p.photo),
+                    "caption": p.caption, 
+                    "created_on": p.creatd_on, 
+                    "likes": likeCount
+                    }
+                posts_lst.append(posts)
+            return jsonify({'posts': posts_lst})
+        
+        except Exception as e:
+            # Handle any exceptions here
+            flash({'An error occurred' : str(e)}, 400)
+            
+
+
+#endpoint for returnung all posts
+
+@app.route('/api/v1/posts', methods=['GET'])
+@jwt_required()  # This decorator requires JWT authentication
+def allPosts():
+
+    if request.method == 'GET':
+
+        try:
+            posts = Posts.query.all()
+            postLst = []
+
+            for post in posts:
+                likes = Likes.query.filter_by(post_id=post.id).all()
+                likes_lst = [{"user_id": like.user_id, "post_id": like.post_id} for like in likes]
+                postLst.append({
+                    "id": post.id,
+                    "user_id": post.user_id,
+                    "photo": "/api/v1/photos/{}".format(post.photo),
+                    "caption": post.caption,
+                    "created_on": post.created_on,
+                    "likes": likes_lst
+                })
+            
+            data = {"posts": postLst}
+            return jsonify(data)
+        
+        except Exception as e:
+            # Handle any exceptions here
+            flash({'An error occurred' : str(e)}, 400)
+
+
+
+#endpoint for creating a follower relationship between current & target user 
+            
+@app.route('/api/v1/users/<target_id>/follow', methods=['POST'])
+@jwt_required()  # This decorator requires JWT authentication
+def follow(target_id):
+    if request.method == 'POST':
+        try:
+            form = FollowForm()
+            tar_user = Users.get_username(target_id)
     
+            user_id = form.user_id.data
 
+            if target_id == user_id:
+                return jsonify({'message': "You cannot follow your self"})
+
+            follow = Follows.query.filter_by(user_id=user_id, target_id=target_id).first()
+            if follow != None:
+                return jsonify({'message' : "You are already following this user"})
+
+            follow = Follows(target_id, user_id)
+            db.session.add(follow)
+            db.session.commit()
+
+            return jsonify({'message' : f" Now following {tar_user}"})
+
+        except Exception as e:
+            # Handle any exceptions here
+            flash({'An error occurred' : str(e)}, 400)
+
+
+#Endpoint for retrieving the number of followers
+
+@app.route('/api/v1/users/<user_id>/follow', methods=['GET'])
+@jwt_required()  # This decorator requires JWT authentication
+def getFollowers(user_id):
+    
+    if request.method == 'GET':
+
+        try:
+        
+            # count = 0
+        
+            followers = Follows.query.filter_by(follower_id=user_id).all()
+            followersLst = []
+
+            for follow in followers:
+                # count += 1
+                followersLst.append(follow.user_id)
+                 
+            return jsonify({"followers": followersLst})
+        
+        except Exception as e:
+            # Handle any exceptions here
+            flash({'An error occurred' : str(e)}, 400)
+
+
+#Endpoint for Set a like on the current Post by the logged in User
+
+@app.route('/api/v1/posts/<postID>/like', methods = ['POST'])
+@jwt_required()  # This decorator requires JWT authentication
+def like(postID):
+
+    if request.method == 'POST':
+        try:
+            
+            user_id = current_user.id
+            post_id = postID
+            
+            like= Likes(post_id, user_id)
+            
+            #  add like to database
+            
+            db.session.add(like)
+            db.session.commit()
+
+            return jsonify({'message': 'Successfully liked post'})
+        
+        
+        except Exception as e:
+            # Handle any exceptions here
+            flash({'An error occurred' : str(e)}, 400)
+
+
+
+    
+#endpoint for getting post by name
 
 @app.route("/api/v1/postuploads/<filename>", methods=['GET'])
 def get_post(filename):
     return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']), filename)
+
 
 #endpoint for csrf token
 
@@ -230,6 +413,8 @@ def get_csrf():
 @login_manager.user_loader
 def load_user(id):
     return db.session.execute(db.select(Users).filter_by(id=id)).scalar()
+
+
 
 
 
