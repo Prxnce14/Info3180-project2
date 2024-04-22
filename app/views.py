@@ -1,6 +1,6 @@
 import os
 from app import app, db, login_manager
-from flask import render_template, request, jsonify, send_file, redirect, url_for, flash, session, abort, send_from_directory
+from flask import render_template, request, jsonify, send_file, redirect, url_for, flash, session, abort, send_from_directory, make_response
 from werkzeug.utils import secure_filename
 from app.models import Posts, Users, Likes, Follows
 from app.forms import PostForm, LoginForm, UsersForm, FollowForm
@@ -30,30 +30,30 @@ def index():
 @app.route('/api/v1/register', methods=['POST'])
 def create_user():
     
-    if request.method == 'POST ':
+    if request.method =='POST':
         try:
             userform = UsersForm()
             if userform.validate_on_submit():
 
-                uname = userform.uname.data
+                print("ready to process the form")
+                uname = userform.username.data
                 pword = userform.password.data
                 fname = userform.firstname.data
                 lname = userform.lastname.data
                 email = userform.email.data
                 local = userform.location.data
                 bio = userform.biography.data
-                created_at = datetime.datetime.now()
                 img = userform.photofile.data
                 filename = secure_filename(img.filename)
 
                 img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-                new_user = Users(uname, pword, fname, lname, email, local, bio, filename, created_at)
+                new_user = Users(uname, pword, fname, lname, email, local, bio, filename)
 
                 db.session.add(new_user)
                 db.session.commit()
 
-                flash('User Successfully Registered', 'success')
+                flash(f'{uname} Successfully Registered', 'success')
 
                 return jsonify({
                     "firstname": fname,
@@ -67,13 +67,14 @@ def create_user():
                 })
 
             else:
-                    errors = form_errors(userform)
-                    return jsonify({'errors': errors})
+                errors = form_errors(userform)
+                return jsonify({'errors': errors})
 
         except Exception as e:
-            # Handle any exceptions here
-            flash({'An error occurred' : str(e)}, 400)
-
+             # Handle any exceptions here
+            return jsonify({'error': str(e)}), 500  # Return JSON response for error
+            
+        
 
 @app.route('/api/v1/auth/login', methods=['POST'])
 def login():
@@ -86,7 +87,7 @@ def login():
                 # Get the username and password values from the form.
                 username = form.username.data
                 password = form.password.data
-
+                
                 # Using your model, query database for a user based on the username
                 # and password submitted. Remember you need to compare the password hash.
                 # You will need to import the appropriate function to do so.
@@ -103,17 +104,17 @@ def login():
                     # Gets user id, load into session
                     # login_user(user)
                     login_user(user)
-
+                
                     # Generate JWT token
-                    access_token = create_access_token(identity=user)
-
-                    # Remember to flash a message to the user
-                    flash('Logged in successfully.', 'success')
+                    access_token = create_access_token(identity=user.id)
 
                     # Return JWT token to the client
+                    return  jsonify({
 
-                    # redirect(url_for('explore',
-                    return jsonify({'access_token': access_token}) 
+                    'message': user.username + ' Successfully logged in' ,
+                    'id': user.id ,
+                    'access_token': access_token 
+                    })
                         
                 else:
                     flash('Username or Password is incorrect.', 'danger')
@@ -125,6 +126,7 @@ def login():
         except Exception as e:
             # Handle any exceptions here
             flash({'An error occurred' : str(e)}, 400)
+            return jsonify({'error': str(e)}), 500  # Return JSON response for error
             
 
 

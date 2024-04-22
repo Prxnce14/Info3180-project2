@@ -17,17 +17,22 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <RouterLink to="/" class="nav-link active">Home</RouterLink>
+              <RouterLink class="nav-link" to="/">Explore</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/about">Explore</RouterLink>
+              <RouterLink class="nav-link" to="/about">About</RouterLink>
+            </li>
+            <li v-if="!isLoggedIn" class="nav-item">
+              <RouterLink class="nav-link" to="/register">Register</RouterLink>
+            </li>
+            <li v-if="isLoggedIn" class="nav-item">
+              <RouterLink class="nav-link" to="/">My Profile</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/movies/create">My Profile</RouterLink>
+              <RouterLink v-if="!isLoggedIn " class="nav-link" to="/login">Login</RouterLink>
+              <RouterLink v-else class="nav-link" to="/logout">Logout</RouterLink>  
             </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/movies">Login</RouterLink>
-            </li>
+            
           </ul>
         </div>
       </div>
@@ -36,7 +41,15 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+  import { RouterLink } from "vue-router";
+  import { ref } from "vue";
+
+  // let isLoggedIn = ref(true)
+  let isLoggedIn = localStorage.getItem('isLogin');
+  // Function to check the user's login state
+
+  
+
 </script>
 
 <style>

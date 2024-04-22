@@ -10,7 +10,7 @@ from wtforms.validators import InputRequired, Email, DataRequired
 #forms for Posts
 
 class PostForm(FlaskForm):
-    photo = FileField('Profile Picture', validators=[FileRequired(), FileAllowed(['jpg','png'],'Image only!')])
+    photo = FileField('Profile Picture', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png'], 'Only JPEG, JPG, and PNG images are allowed!')])
     caption = TextAreaField('Caption', validators=[InputRequired()])    
 
 
@@ -18,7 +18,7 @@ class PostForm(FlaskForm):
 #Forms for users
 
 class UsersForm(FlaskForm):
-    uname = StringField('username ', validators=[InputRequired()])
+    username = StringField('username ', validators=[InputRequired()])
     password = StringField('Password ', validators=[InputRequired()])
     firstname = StringField('First Name ', validators=[InputRequired()])
     lastname = StringField('Last Name ', validators=[InputRequired()])
