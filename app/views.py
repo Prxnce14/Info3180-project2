@@ -56,6 +56,7 @@ def create_user():
                 flash(f'{uname} Successfully Registered', 'success')
 
                 return jsonify({
+                    "message": "Movie Successfully added",
                     "firstname": fname,
                     "lastname": lname,
                     "username": uname,
@@ -104,6 +105,8 @@ def login():
                     # Gets user id, load into session
                     # login_user(user)
                     login_user(user)
+
+                    id = user.id
                 
                     # Generate JWT token
                     access_token = create_access_token(identity=user.id)
@@ -204,6 +207,8 @@ def add_post(user_id):
 
     if request.method == 'POST':
         try:
+            user_id = current_user.get_id()
+            print("user id is", user_id)
             current_user = get_jwt_identity()  # Get the current user from the JWT token
 
             if current_user.get('user_id') != user_id:
@@ -214,7 +219,7 @@ def add_post(user_id):
 
                 if pform.validate_on_submit():
 
-                    us_id = user_id
+                    #us_id = user_id
                     p_caption = pform.caption.data
                     p_photo = pform.photo.data
                     created_on = datetime.datetime.now()
@@ -222,7 +227,7 @@ def add_post(user_id):
                     filename = secure_filename(p_photo.filename)
                     p_photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-                    post = Posts(p_caption, filename, us_id, created_on)
+                    post = Posts(p_caption, filename, user_id)
                     db.session.add(post)
                     db.session.commit()
 
@@ -230,8 +235,7 @@ def add_post(user_id):
                             "message": "Post Successfully added",
                             "user_id": post.user_id,
                             "photo": post.photo,
-                            "caption": post.caption,
-                            "created_on": created_on
+                            "caption": post.caption
                     })
 
                 else:

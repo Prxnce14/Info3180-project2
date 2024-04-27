@@ -32,6 +32,9 @@
               <RouterLink v-if="!isLoggedIn " class="nav-link" to="/login">Login</RouterLink>
               <RouterLink v-else class="nav-link" to="/logout">Logout</RouterLink>  
             </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/addpost">Create Post</RouterLink>
+            </li>
             
           </ul>
         </div>
