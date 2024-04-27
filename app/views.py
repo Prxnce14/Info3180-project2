@@ -202,48 +202,48 @@ def getUserDetails(user_id):
 #remember to add login required for this 
 
 @app.route('/api/v1/users/<user_id>/posts', methods=['POST'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
+
 def add_post(user_id):
+    pform = PostForm()
 
     if request.method == 'POST':
         try:
-            user_id = current_user.get_id()
+            #user_id = current_user.get_id()
             print("user id is", user_id)
-            current_user = get_jwt_identity()  # Get the current user from the JWT token
+            #current_user = get_jwt_identity()  # Get the current user from the JWT token
 
-            if current_user.get('user_id') != user_id:
-                return jsonify({'message': 'Unauthorized'}), 401
 
+            if pform.validate_on_submit():
+
+                #us_id = user_id
+                p_caption = pform.caption.data
+                p_photo = pform.photo.data
+                created_on = datetime.datetime.now()
+
+                filename = secure_filename(p_photo.filename)
+                p_photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                post = Posts(p_caption, filename, user_id)
+                db.session.add(post)
+                db.session.commit()
+
+                return jsonify({
+                        "message": "Post Successfully added",
+                        "user_id": post.user_id,
+                        "photo": post.photo,
+                        "caption": post.caption
+                })
             else:
-                pform = PostForm()
-
-                if pform.validate_on_submit():
-
-                    #us_id = user_id
-                    p_caption = pform.caption.data
-                    p_photo = pform.photo.data
-                    created_on = datetime.datetime.now()
-
-                    filename = secure_filename(p_photo.filename)
-                    p_photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-                    post = Posts(p_caption, filename, user_id)
-                    db.session.add(post)
-                    db.session.commit()
-
-                    return jsonify({
-                            "message": "Post Successfully added",
-                            "user_id": post.user_id,
-                            "photo": post.photo,
-                            "caption": post.caption
-                    })
-
-                else:
-                    return jsonify({'errors': form_errors(pform)})
-                    
+                print("not validate")
+                return jsonify({'errors': form_errors(pform)})
         except Exception as e:
-            # Handle any exceptions here
+        # Handle any exceptions here
             flash({'An error occurred' : str(e)}, 400)
+    print("not post")
+    return jsonify({'errors': form_errors(pform)})
+                    
+ 
             
 
 #Endpoint for returning users posts

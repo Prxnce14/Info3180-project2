@@ -76,6 +76,7 @@
       .then(function (data) {
         console.log(data);
         // Check if the response contains an access token
+        localStorage.setItem('user_id', data.id);
         if (data.access_token) {
             // Redirect to the explore page
             window.location.href = '/explore'; // Replace '/explore' with the URL of your explore page

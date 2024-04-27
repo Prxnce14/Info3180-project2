@@ -44,15 +44,17 @@
     let successMessage = ref("");
     //let userId = ref(""); // Add a reactive variable to store the user ID
 
+
     function addPost() { // Accept userId as a parameter
 
 
         let addPostForm = document.getElementById('postForm');
         let formdata = new FormData(addPostForm);
+        let user_id = localStorage.getItem('user_id');
 
         //user_id = session["user_id"]
 
-        fetch("/api/v1/users/{user_id}/posts", {
+        fetch("/api/v1/users/" + user_id + "/posts", {
             method: 'POST',
             body: formdata,
             headers: {
