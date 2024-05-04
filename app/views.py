@@ -249,7 +249,7 @@ def add_post(user_id):
 #Endpoint for returning users posts
 
 @app.route('/api/v1/users/<user_id>/posts', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def posts(user_id):
     if request.method == 'GET':
 
@@ -284,7 +284,7 @@ def posts(user_id):
 #endpoint for returnung all posts
 
 @app.route('/api/v1/posts', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def allPosts():
 
     if request.method == 'GET':
@@ -299,7 +299,7 @@ def allPosts():
                 postLst.append({
                     "id": post.id,
                     "user_id": post.user_id,
-                    "photo": "/api/v1/photos/{}".format(post.photo),
+                    "photo": "/api/v1/postuploads/{}".format(post.photo),
                     "caption": post.caption,
                     "created_on": post.created_on,
                     "likes": likes_lst
