@@ -101,7 +101,8 @@
         .then(function (data) {
             console.log(data);
             
-            message.value = data;
+            message.value = data.message;
+            reg_form.reset();
         })
         .catch(function (error) {
             console.log(error);

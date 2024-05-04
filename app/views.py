@@ -56,6 +56,7 @@ def create_user():
                 flash(f'{uname} Successfully Registered', 'success')
 
                 return jsonify({
+                    "message": "Movie Successfully added",
                     "firstname": fname,
                     "lastname": lname,
                     "username": uname,
@@ -104,6 +105,8 @@ def login():
                     # Gets user id, load into session
                     # login_user(user)
                     login_user(user)
+
+                    id = user.id
                 
                     # Generate JWT token
                     access_token = create_access_token(identity=user.id)
@@ -199,53 +202,54 @@ def getUserDetails(user_id):
 #remember to add login required for this 
 
 @app.route('/api/v1/users/<user_id>/posts', methods=['POST'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
+
 def add_post(user_id):
+    pform = PostForm()
 
     if request.method == 'POST':
         try:
-            current_user = get_jwt_identity()  # Get the current user from the JWT token
+            #user_id = current_user.get_id()
+            print("user id is", user_id)
+            #current_user = get_jwt_identity()  # Get the current user from the JWT token
 
-            if current_user.get('user_id') != user_id:
-                return jsonify({'message': 'Unauthorized'}), 401
 
+            if pform.validate_on_submit():
+
+                #us_id = user_id
+                p_caption = pform.caption.data
+                p_photo = pform.photo.data
+                created_on = datetime.datetime.now()
+
+                filename = secure_filename(p_photo.filename)
+                p_photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                post = Posts(p_caption, filename, user_id)
+                db.session.add(post)
+                db.session.commit()
+
+                return jsonify({
+                        "message": "Post Successfully added",
+                        "user_id": post.user_id,
+                        "photo": post.photo,
+                        "caption": post.caption
+                })
             else:
-                pform = PostForm()
-
-                if pform.validate_on_submit():
-
-                    us_id = user_id
-                    p_caption = pform.caption.data
-                    p_photo = pform.photo.data
-                    created_on = datetime.datetime.now()
-
-                    filename = secure_filename(p_photo.filename)
-                    p_photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-                    post = Posts(p_caption, filename, us_id, created_on)
-                    db.session.add(post)
-                    db.session.commit()
-
-                    return jsonify({
-                            "message": "Post Successfully added",
-                            "user_id": post.user_id,
-                            "photo": post.photo,
-                            "caption": post.caption,
-                            "created_on": created_on
-                    })
-
-                else:
-                    return jsonify({'errors': form_errors(pform)})
-                    
+                print("not validate")
+                return jsonify({'errors': form_errors(pform)})
         except Exception as e:
-            # Handle any exceptions here
+        # Handle any exceptions here
             flash({'An error occurred' : str(e)}, 400)
+    print("not post")
+    return jsonify({'errors': form_errors(pform)})
+                    
+ 
             
 
 #Endpoint for returning users posts
 
 @app.route('/api/v1/users/<user_id>/posts', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def posts(user_id):
     if request.method == 'GET':
 
@@ -280,7 +284,7 @@ def posts(user_id):
 #endpoint for returnung all posts
 
 @app.route('/api/v1/posts', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def allPosts():
 
     if request.method == 'GET':
@@ -295,7 +299,7 @@ def allPosts():
                 postLst.append({
                     "id": post.id,
                     "user_id": post.user_id,
-                    "photo": "/api/v1/photos/{}".format(post.photo),
+                    "photo": "/api/v1/postuploads/{}".format(post.photo),
                     "caption": post.caption,
                     "created_on": post.created_on,
                     "likes": likes_lst
