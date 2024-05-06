@@ -156,46 +156,57 @@ def logout():
 #Endpoint for getting user details
 
 @app.route('/api/v1/users/<user_id>', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def getUserDetails(user_id):
     if request.method == 'GET':
         try:
 
             user = Users.query.filter_by(id=user_id).first()
             posts = Posts.query.filter_by(user_id = user_id).all()
+            print("outside")
+            postLst = []
             
             for p in posts:
 
-                    likeCount = len(Likes.query.filter_by(post_id=p.id).all())
-
-                    posts={
-                        "id": p.id,
-                        "user_id": p.user_id,
-                        "username": user.username,
-                        "photo": "/api/v1/postuploads/{}".format(p.photo),
-                        "caption": p.caption, 
-                        "created_on": p.creatd_on, 
-                        "likes": likeCount
-                    }
-
-                    data = {
-                        "id": user.id,
-                        "username": user.username,
-                        "firstname": user.first_name,
-                        "lastname": user.last_name,
-                        "email": user.email,
-                        "location": user.location,
-                        "biography": user.biography,
-                        "profile_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
-                        "joined_on": user.joined_on,
-                        "posts": [posts]
+                likeCount = len(Likes.query.filter_by(post_id=p.id).all())
+                print("inside 1")
+                postLst.append({
+                    "id": p.id,
+                    "user_id": p.user_id,
+                    "username": user.username,
+                    "photo": "/api/v1/postuploads/{}".format(p.photo),
+                    "caption": p.caption, 
+                    "created_on": p.created_on, 
+                    "likes": likeCount
+                })
             
+            #posts1 = {"posts": postLst}
+
+            print("inside 12")
+
+
+
+            data = {
+                "id": user.id,
+                "username": user.username,
+                "firstname": user.firstname,
+                "lastname": user.lastname,
+                "email": user.email,
+                "location": user.location,
+                "biography": user.biography,
+                "profile_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
+                "joined_on": user.created_on,
+                "posts": postLst
+
             }
+                        
+            print("inside 2")
             return jsonify(data)
         
         except Exception as e:
                 # Handle any exceptions here
                 flash({'An error occurred' : str(e)}, 400)
+    return jsonify({'errors': 1})
 
 
 #Endpoint for adding posts to users feed
@@ -278,7 +289,7 @@ def posts(user_id):
         except Exception as e:
             # Handle any exceptions here
             flash({'An error occurred' : str(e)}, 400)
-            
+    return jsonify({'errors': 1})
 
 
 #endpoint for returnung all posts
@@ -294,11 +305,14 @@ def allPosts():
             postLst = []
 
             for post in posts:
+                user = Users.query.filter_by(id=post.user_id).first()
                 likes = Likes.query.filter_by(post_id=post.id).all()
                 likes_lst = [{"user_id": like.user_id, "post_id": like.post_id} for like in likes]
                 postLst.append({
                     "id": post.id,
                     "user_id": post.user_id,
+                    "user_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
+                    "username": user.username,
                     "photo": "/api/v1/postuploads/{}".format(post.photo),
                     "caption": post.caption,
                     "created_on": post.created_on,

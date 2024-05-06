@@ -1,0 +1,187 @@
+<template>
+    <div class="profile-container">
+        <!----<div v-for="user in user_data" :key="user.id" class="profile-info">--->
+          <div class="row g-0">
+            <div class="col-sm-3">
+                <img :src="user_data.profile_photo" class="pp" alt="Profile Picture" />
+                <h3>{{ user_data.firstname }}</h3>
+                <p>@{{ user_data.username }}</p>
+                <p>{{ user_data.location }}</p>
+                <p>Member since {{ user_data.joined_on }}</p>
+            </div>
+            <p>{{ user_data.location }}</p>
+            <p class="bio">{{ user_data.biography }}</p>
+            <p>Member since {{ user_data.joined_on }}</p>
+            <div class="stats-panel">
+                <div class="stats">
+                <h6 class="count">1</h6>
+                <span>Posts</span>
+                </div>
+                <div class="stats">
+                <h6 class="count">99</h6>
+                <span>Followers</span>
+                </div>
+            </div>
+            <div class="follow-btn">
+                <button :class="{ 'followed': isFollowing }" @click="follow">{{ isFollowing ? 'Following' : 'Follow' }}</button>
+            </div>
+            </div>
+        <!----</div>--->
+        <div class="image-grid-container">
+            <div class="image-grid">
+            <div v-for="post in user_data.posts" :key="post.id" class="image-grid-item">
+                <img :src="post.photo" alt="Uploaded photo"/>
+            </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+let user_data = ref([]);
+let isFollowing = ref(false);
+let posts = ref([]);
+let csrf_token = ref("");
+let user_id = localStorage.getItem('user_id');
+
+function getCsrfToken() {
+  fetch("/api/v1/csrf-token")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      csrf_token.value = data.csrf_token;
+    });
+}
+
+function getUser(){
+  fetch("/api/v1/users/" + user_id, {
+    method: "GET",
+    headers: { "X-CSRFToken": csrf_token.value },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      user_data.value = data;
+      console.log(data)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+function getPosts() {
+  fetch("/api/v1/users/" + user_id + "/posts", {
+    method: "GET",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(posts);
+      posts.value = data.posts;
+      console.log("posts", posts);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+function follow(user_id, follower_id)  {
+  fetch("/api/users/{user_id}/follow", { 
+    method: "POST",
+    headers: {
+      'X-CSRFToken': csrf_token.value
+    }
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.ok) {
+        isFollowing.value = !isFollowing.value;
+        console.log(data)
+        return response.json();
+      } else {
+        throw new Error("Failed to follow user");
+      }
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+}
+onMounted(() => {
+  getCsrfToken();
+  getUser();
+  getPosts();
+  follow();
+});
+
+function getFollowers(){
+  fetch("/api/v1/users/user_id/follow")
+    .then((response) => response.json())
+    .then((data) => {
+      isFollowing.value = data.isFollowing;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+</script>
+
+<style>
+.image-grid-item {
+  margin-top: 5%;
+  padding: 2%;
+}
+
+.image-grid-item img {
+  width: 400px;
+  height: 300px;
+}
+
+.profile-container {
+  padding: 2%;
+  margin: 2%;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+} 
+
+.pp {
+  width: 100%;
+  height: 100%;
+  margin-bottom: 10px;
+}
+
+.name-container {
+  margin-top: 10%;
+  margin-left: 10px;
+}
+
+.name-container h3 {
+  font-weight: bold;
+}
+
+.stats {
+  margin-right: 40px;
+}
+
+.stats-panel {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 15px;
+    margin-top: 40%;
+    margin-left: 368px;
+}
+
+.count {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.follow-btn {
+  margin-left: 365px;
+}
+
+.followed {
+  background-color: green;
+  color: white;
+}
+</style>

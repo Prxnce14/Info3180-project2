@@ -74,11 +74,11 @@ onMounted(() => {
       <div class="post" v-for="post in posts" :key="post.id">
         <div class="user-info">
           <img
-            :src="post.user.profile_photo"
+            :src="post.user_photo"
             alt="Profile Photo"
             class="profile-photo"
           />
-          <span class="username">{{ post.user.username }}</span>
+          <span class="username">{{ post.username }}</span>
         </div>
         <div class="post-image">
           <img :src="post.photo" alt="Post Photo" class="post-photo" />
@@ -106,7 +106,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="new-post">
-      <a href="/posts/new"><button class="newpost">New Post</button></a>
+      <a href="/addpost"><button class="newpost">New Post</button></a>
     </div>
   </div>
 </template>

@@ -17,25 +17,28 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/explore">Explore</RouterLink>
+              <RouterLink class="nav-link" to="/">Home</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/about">About</RouterLink>
+              <RouterLink class="nav-link" to="/explore">Explore</RouterLink>
             </li>
             <li v-if="!isLoggedIn" class="nav-item">
               <RouterLink class="nav-link" to="/register">Register</RouterLink>
             </li>
-            <li v-if="isLoggedIn" class="nav-item">
-              <RouterLink class="nav-link" to="/">My Profile</RouterLink>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/profile">My Profile</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/addpost">Create Post</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink v-if="!isLoggedIn " class="nav-link" to="/login">Login</RouterLink>
               <RouterLink v-else class="nav-link" to="/logout">Logout</RouterLink>  
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/addpost">Create Post</RouterLink>
+              <RouterLink class="nav-link" to="/logout">Logout</RouterLink>
             </li>
-            
+        
           </ul>
         </div>
       </div>
@@ -51,6 +54,7 @@
   let isLoggedIn = localStorage.getItem('isLogin');
   // Function to check the user's login state
 
+  //let isLoggedIn = false;
   
 
 </script>
