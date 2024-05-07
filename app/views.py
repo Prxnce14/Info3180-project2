@@ -45,6 +45,8 @@ def create_user():
                 bio = userform.biography.data
                 img = userform.photofile.data
                 filename = secure_filename(img.filename)
+                print("Saving file to:", os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
 
                 img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
@@ -56,7 +58,7 @@ def create_user():
                 flash(f'{uname} Successfully Registered', 'success')
 
                 return jsonify({
-                    "message": "Movie Successfully added",
+                    "message": "User Successfully added",
                     "firstname": fname,
                     "lastname": lname,
                     "username": uname,
@@ -154,48 +156,50 @@ def logout():
 
 
 #Endpoint for getting user details
+from flask import jsonify
 
 @app.route('/api/v1/users/<user_id>', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def getUserDetails(user_id):
     if request.method == 'GET':
         try:
-
-            user = Users.query.filter_by(id=user_id).first()
-            posts = Posts.query.filter_by(user_id = user_id).all()
+            user = db.session.execute(db.select(Users).filter_by(id=int(user_id))).scalar()
+            posts = Posts.query.filter_by(user_id=user_id).all()
             
+            posts_data = []
             for p in posts:
+                likeCount = len(Likes.query.filter_by(post_id=p.id).all())
 
-                    likeCount = len(Likes.query.filter_by(post_id=p.id).all())
+                post_data = {
+                    "id": p.id,
+                    "user_id": p.user_id,
+                    "username": user.username,
+                    "photo": "/api/v1/postuploads/{}".format(p.photo),
+                    "caption": p.caption, 
+                    "created_on": p.created_on,  
+                    "likes": likeCount
+                }
+                posts_data.append(post_data)
 
-                    posts={
-                        "id": p.id,
-                        "user_id": p.user_id,
-                        "username": user.username,
-                        "photo": "/api/v1/postuploads/{}".format(p.photo),
-                        "caption": p.caption, 
-                        "created_on": p.creatd_on, 
-                        "likes": likeCount
-                    }
-
-                    data = {
-                        "id": user.id,
-                        "username": user.username,
-                        "firstname": user.first_name,
-                        "lastname": user.last_name,
-                        "email": user.email,
-                        "location": user.location,
-                        "biography": user.biography,
-                        "profile_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
-                        "joined_on": user.joined_on,
-                        "posts": [posts]
-            
+            data = {
+                "id": user.id,
+                "username": user.username,
+                "firstname": user.firstname,
+                "lastname": user.lastname,
+                "email": user.email,
+                "location": user.location,
+                "biography": user.biography,
+                "profile_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
+                "joined_on": user.created_on,
+                "posts": posts_data  
             }
             return jsonify(data)
         
         except Exception as e:
-                # Handle any exceptions here
-                flash({'An error occurred' : str(e)}, 400)
+            # Handle any exceptions here
+            error_message = {'error': 'An error occurred', 'details': str(e)}
+            return jsonify(error_message), 500
+
 
 
 #Endpoint for adding posts to users feed
@@ -247,44 +251,42 @@ def add_post(user_id):
             
 
 #Endpoint for returning users posts
-
 @app.route('/api/v1/users/<user_id>/posts', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def posts(user_id):
     if request.method == 'GET':
-
         try:
-        
-            posts_all = Posts.query.filter_by(user_id = user_id).all() 
+            posts_all = Posts.query.filter_by(user_id=user_id).all() 
             user = Users.query.filter_by(id=user_id).first()
 
-            posts_lst =[]
+            posts_lst = []
             for p in posts_all:
-
                 likeCount = len(Likes.query.filter_by(post_id=p.id).all())
 
-                posts={
+                posts = {
                     "id": p.id,
                     "user_id": p.user_id,
                     "username": user.username,
                     "photo": "/api/v1/postuploads/{}".format(p.photo),
                     "caption": p.caption, 
-                    "created_on": p.creatd_on, 
+                    "created_on": p.created_on, 
                     "likes": likeCount
-                    }
+                }
                 posts_lst.append(posts)
+
             return jsonify({'posts': posts_lst})
-        
+
         except Exception as e:
-            # Handle any exceptions here
-            flash({'An error occurred' : str(e)}, 400)
+            # Return an error response
+            return jsonify({'error': str(e)}), 500
+
             
 
 
 #endpoint for returnung all posts
 
 @app.route('/api/v1/posts', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def allPosts():
 
     if request.method == 'GET':
@@ -299,7 +301,7 @@ def allPosts():
                 postLst.append({
                     "id": post.id,
                     "user_id": post.user_id,
-                    "photo": "/api/v1/photos/{}".format(post.photo),
+                    "photo": "/api/v1/postuploads/{}".format(post.photo),
                     "caption": post.caption,
                     "created_on": post.created_on,
                     "likes": likes_lst
