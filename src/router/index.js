@@ -4,6 +4,7 @@ import AboutView from '../views/AboutView.vue'
 import RegisterView from  '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import LogoutView from '../views/LogoutView.vue'
+import ExplorePage from '../views/ExplorePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,15 +39,20 @@ const router = createRouter({
       component: LogoutView
     },
     {
-      path: '/addpost',
-      name: 'add_post',
+      path: '/posts/new',
+      name: 'newpost',
       component: () => import('../views/AddPost.vue')
     },
     {
-      path:'/myprofile',
-      name: 'myprofile',
+      path:'/users/profile',
+      name: 'userprofile',
       component: () => import('../views/MyProfile.vue')
-    }
+    },
+    {
+      path: '/explore',
+      name: 'explore',
+      component: ExplorePage
+    },
   ]
 })
 

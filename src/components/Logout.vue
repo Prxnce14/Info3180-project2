@@ -33,6 +33,7 @@
     import {ref, onMounted} from "vue";
 
     let csrf_token = ref("");
+    
     let logoutStatus = ref("")
 
     let token = localStorage.getItem('token')
@@ -54,7 +55,7 @@
 
 
     function logout(){
-
+        let isLoggedIn = ref(true);
         
         fetch("/api/v1/auth/logout", {
                 method: 'POST',
@@ -71,7 +72,8 @@
             logoutStatus.value = "success";  
             if (logoutStatus.value == 'success'){
 
-              localStorage.setItem('isLogin', 'false');
+              localStorage.setItem('isLogin', false);
+              isLoggedIn.value = false;
               setTimeout(() => {
               window.location.href = '/login';
               }, 1200); // 2000 milliseconds = 2 seconds

@@ -19,13 +19,6 @@ app.config.from_object(Config)
 csrf = CSRFProtect(app)
 
 db = SQLAlchemy(app)
-<<<<<<< HEAD
-migrate = Migrate(app, db)
-
-from app import views
-
-csrf = CSRFProtect(app)
-=======
 # Instantiate Flask-Migrate library here
 migrate = Migrate(app, db)
 
@@ -39,4 +32,3 @@ jwt = JWTManager(app)
 
 from app import views
 from app import models
->>>>>>> 258183c76fc99e933fab91dd045a5e0ffddc314e

@@ -106,7 +106,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="new-post">
-      <a href="/addpost"><button class="newpost">New Post</button></a>
+      <a href="/posts/new"><button class="newpost">New Post</button></a>
     </div>
   </div>
 </template>
@@ -141,7 +141,7 @@ onMounted(() => {
 }
 
 .user-info img {
-  width: 45px;
+  width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-right: 5px;

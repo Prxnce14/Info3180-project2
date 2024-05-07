@@ -1,88 +1,111 @@
 <script setup>
-import { ref } from "vue";
-import {useRouter} from "vue-router";
-const router = useRouter()
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 
+const goToLogin = () => {
+  router.push('/login');
+};
 
+const goToRegister = () => {
+  router.push('/register');
+};
 </script>
 
 <template>
-    <div class="homecontainer">
-
-      <div class="card">
-        <img src="@/assets/home-img.jpg" alt=""/>
-      </div>
-
-      <div class="card info">
-        <div class="title">
-          <h3 >Photogram</h3>
-        </div>
-        <hr>
-        <div class="card-body">
-          <p>Share photos of your favourite moments with friends, family and the world</p>
-          <div class="button-box">
-            <button @click="$router.push('/register')" class="btn register">Register</button>
-            <button @click="$router.push('/login')" class="btn btn-primary login">Login</button>
-          </div>
-        </div>
-      </div>
-
+  <div class="parent-container">
+  <div class="container1">
+    <div class="image">
+      <img src="homepage.jpg" alt="Photogram Image" width="200">
     </div>
+  </div>
+    <div class="container2">
+    <div class="content">
+      <div class="title">Photogram</div>
+      <div class="paragraph">Share photos of your favourite moments with friends, family and the world.</div>
+      <div class="button-container">
+        <button class="btn" @click="goToRegister">Register</button>
+        <button class="btn" @click="goToLogin">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 
 <style>
-  .homecontainer{
-    display: flex;
-    column-gap: 8px;
-    align-content: center;
-    justify-content: center;
-  }
+.parent-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 40px;
+  margin-right: 40px;
+  
+}
 
-  .title{
-    text-align: center;
-  }
+.container1, .container2 {
+  text-align: center;
+  background-color: white;
+  flex: 1;
+  height: 400px; 
+  border: 3px solid #ccc; 
+}
 
-  h3{
-    font-weight: bold;
-  }
+.container1 {
+  margin-right: 10px; 
+}
 
-  .info{
-    padding: 25px;
-  }
+.image {
+  width: 100%;
+  height: 100%;
+}
 
-  .button-box{
-    display: flex;
-    justify-content: center;
-    column-gap: 5px;
-  }
+.image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+}
 
-  .register{
-    background-color: rgb(7, 202, 43);
-        color: white;
-        font-weight: bold;
+.title {
+  font-size: 40px;
+  font-weight: bold;
+  margin-top: 20px;
+}
 
-        border: none;
-        border-radius: 10px;
+.paragraph {
+  font-size: 18px;
+  margin-top: 20px;
+}
 
-        width: 100%;
-        margin-top: 10px;
-        padding: 6px;
-  }
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+}
 
-  .register:hover{
-    background-color: rgb(4, 220, 44);
-    color: white;
-    transition: all 0.8s;
-  }
+.button-container {
+  display: flex; 
+  flex-direction: row; 
+  margin-top: 70px; 
+  width: 400px
+}
 
-  .login{
+.btn {
+  padding: 20px 40px; 
+  font-size: 16px;
+  margin: 0 5px; 
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
-    font-weight: bold;
+.login-btn {
+  background-color: #007bff;
+  color: white;
+}
 
-    width: 100%;
-    margin-top: 10px;
-    padding: 6px;
-
-  }
+.register-btn {
+  background-color: #28a745;
+  color: white;
+}
 </style>

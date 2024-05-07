@@ -160,6 +160,7 @@ from flask import jsonify
 
 @app.route('/api/v1/users/<user_id>', methods=['GET'])
 #@jwt_required()  # This decorator requires JWT authentication
+#@login_required
 def getUserDetails(user_id):
     if request.method == 'GET':
         try:
@@ -207,7 +208,7 @@ def getUserDetails(user_id):
 
 @app.route('/api/v1/users/<user_id>/posts', methods=['POST'])
 #@jwt_required()  # This decorator requires JWT authentication
-
+#@login_required
 def add_post(user_id):
     pform = PostForm()
 
@@ -296,11 +297,14 @@ def allPosts():
             postLst = []
 
             for post in posts:
+                user = Users.query.filter_by(id=post.user_id).first()
                 likes = Likes.query.filter_by(post_id=post.id).all()
                 likes_lst = [{"user_id": like.user_id, "post_id": like.post_id} for like in likes]
                 postLst.append({
                     "id": post.id,
                     "user_id": post.user_id,
+                    "user_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
+                    "username": user.username,
                     "photo": "/api/v1/postuploads/{}".format(post.photo),
                     "caption": post.caption,
                     "created_on": post.created_on,
@@ -313,6 +317,7 @@ def allPosts():
         except Exception as e:
             # Handle any exceptions here
             flash({'An error occurred' : str(e)}, 400)
+
 
 
 

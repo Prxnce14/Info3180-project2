@@ -75,13 +75,17 @@
       }) 
       .then(function (data) {
         console.log(data);
+        if ("errors" in data){
+            errors.value = [...data.errors];
+        }else{
         // Check if the response contains an access token
-        localStorage.setItem('user_id', data.id);
-        if (data.access_token) {
-            // Redirect to the explore page
-            window.location.href = '/explore'; // Replace '/explore' with the URL of your explore page
-            isLoggedIn.value = true; // Set isLoggedIn to true if login is successful
-        } 
+          localStorage.setItem('user_id', data.id);
+          if (data.access_token) {
+              // Redirect to the explore page
+              window.location.href = '/explore'; // Replace '/explore' with the URL of your explore page
+              isLoggedIn.value = true; // Set isLoggedIn to true if login is successful
+          } 
+        }
       })
       .catch(function (error) {
           console.error('Login failed:', error);

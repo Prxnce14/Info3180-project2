@@ -22,23 +22,16 @@
             <li class="nav-item">
               <RouterLink class="nav-link" to="/explore">Explore</RouterLink>
             </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/about">About</RouterLink>
-            </li>
             <li v-if="!isLoggedIn" class="nav-item">
               <RouterLink class="nav-link" to="/register">Register</RouterLink>
             </li>
             <li v-if="isLoggedIn" class="nav-item">
-              <RouterLink class="nav-link" to="/myprofile">My Profile</RouterLink>
+              <RouterLink class="nav-link" to="/users/profile">My Profile</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink v-if="!isLoggedIn " class="nav-link" to="/login">Login</RouterLink>
               <RouterLink v-else class="nav-link" to="/logout">Logout</RouterLink>  
             </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/addpost">Create Post</RouterLink>
-            </li>
-            
           </ul>
         </div>
       </div>
@@ -50,7 +43,7 @@
   import { RouterLink } from "vue-router";
   import { ref } from "vue";
 
-  // let isLoggedIn = ref(true)
+  //let isLoggedIn = ref(false);
   let isLoggedIn = localStorage.getItem('isLogin');
   // Function to check the user's login state
 
