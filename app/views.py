@@ -303,8 +303,11 @@ def allPosts():
                 postLst.append({
                     "id": post.id,
                     "user_id": post.user_id,
+<<<<<<< HEAD
                     "user_photo": "/api/v1/postuploads/{}".format(user.profile_photo),
                     "username": user.username,
+=======
+>>>>>>> 3c6bd7368499e0fc031d3459f82491c18ca241a1
                     "photo": "/api/v1/postuploads/{}".format(post.photo),
                     "caption": post.caption,
                     "created_on": post.created_on,

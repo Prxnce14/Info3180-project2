@@ -44,6 +44,7 @@ const router = createRouter({
       component: () => import('../views/AddPost.vue')
     },
     {
+<<<<<<< HEAD
       path:'/users/profile',
       name: 'userprofile',
       component: () => import('../views/MyProfile.vue')
@@ -53,6 +54,12 @@ const router = createRouter({
       name: 'explore',
       component: ExplorePage
     },
+=======
+      path: '/explore',
+      name: 'Explore',
+      component: ExplorePage
+    }
+>>>>>>> 3c6bd7368499e0fc031d3459f82491c18ca241a1
   ]
 })
 

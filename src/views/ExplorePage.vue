@@ -74,11 +74,19 @@ onMounted(() => {
       <div class="post" v-for="post in posts" :key="post.id">
         <div class="user-info">
           <img
+<<<<<<< HEAD
             :src="post.user_photo"
             alt="Profile Photo"
             class="profile-photo"
           />
           <span class="username">{{ post.username }}</span>
+=======
+            :src="post.user.profile_photo"
+            alt="Profile Photo"
+            class="profile-photo"
+          />
+          <span class="username">{{ post.user.username }}</span>
+>>>>>>> 3c6bd7368499e0fc031d3459f82491c18ca241a1
         </div>
         <div class="post-image">
           <img :src="post.photo" alt="Post Photo" class="post-photo" />
@@ -141,7 +149,11 @@ onMounted(() => {
 }
 
 .user-info img {
+<<<<<<< HEAD
   width: 40px;
+=======
+  width: 45px;
+>>>>>>> 3c6bd7368499e0fc031d3459f82491c18ca241a1
   height: 40px;
   border-radius: 50%;
   margin-right: 5px;

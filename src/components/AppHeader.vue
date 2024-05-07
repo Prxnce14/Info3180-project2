@@ -17,7 +17,11 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
+<<<<<<< HEAD
               <RouterLink to="/" class="nav-link active">Home</RouterLink>
+=======
+              <RouterLink class="nav-link" to="/explore">Explore</RouterLink>
+>>>>>>> 3c6bd7368499e0fc031d3459f82491c18ca241a1
             </li>
             <li class="nav-item">
               <RouterLink class="nav-link" to="/explore">Explore</RouterLink>
