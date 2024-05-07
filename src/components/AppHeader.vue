@@ -2,7 +2,7 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">VueJS with Flask</a>
+        <a class="navbar-brand" href="/">Photogram</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -20,8 +20,25 @@
               <RouterLink to="/" class="nav-link active">Home</RouterLink>
             </li>
             <li class="nav-item">
+              <RouterLink class="nav-link" to="/explore">Explore</RouterLink>
+            </li>
+            <li class="nav-item">
               <RouterLink class="nav-link" to="/about">About</RouterLink>
             </li>
+            <li v-if="!isLoggedIn" class="nav-item">
+              <RouterLink class="nav-link" to="/register">Register</RouterLink>
+            </li>
+            <li v-if="isLoggedIn" class="nav-item">
+              <RouterLink class="nav-link" to="/myprofile">My Profile</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink v-if="!isLoggedIn " class="nav-link" to="/login">Login</RouterLink>
+              <RouterLink v-else class="nav-link" to="/logout">Logout</RouterLink>  
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/addpost">Create Post</RouterLink>
+            </li>
+            
           </ul>
         </div>
       </div>
@@ -30,7 +47,15 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+  import { RouterLink } from "vue-router";
+  import { ref } from "vue";
+
+  // let isLoggedIn = ref(true)
+  let isLoggedIn = localStorage.getItem('isLogin');
+  // Function to check the user's login state
+
+  
+
 </script>
 
 <style>
