@@ -326,29 +326,21 @@ def allPosts():
 
 #endpoint for creating a follower relationship between current & target user 
             
-@app.route('/api/v1/users/<target_id>/follow', methods=['POST'])
-@jwt_required()  # This decorator requires JWT authentication
-def follow(target_id):
-    if request.method == 'POST':
+@app.route('/api/v1/users/<user_id>/follow', methods = ['POST'])
+# @login_required
+# @requires_auth
+def follow(user_id):
+    if request.method=='POST':
+
         try:
-            form = FollowForm()
-            tar_user = Users.get_username(target_id)
-    
-            user_id = form.user_id.data
-
-            if target_id == user_id:
-                return jsonify({'message': "You cannot follow your self"})
-
-            follow = Follows.query.filter_by(user_id=user_id, target_id=target_id).first()
-            if follow != None:
-                return jsonify({'message' : "You are already following this user"})
-
-            follow = Follows(target_id, user_id)
-            db.session.add(follow)
+            follower_id = session.get('user_id')
+            user_id = user_id
+            newFollower = Follows(follower_id, user_id)
+            db.session.add(newFollower)
             db.session.commit()
 
-            return jsonify({'message' : f" Now following {tar_user}"})
-
+            return make_response({"message": "Successfully followed user"},200)
+        
         except Exception as e:
             # Handle any exceptions here
             flash({'An error occurred' : str(e)}, 400)
@@ -357,7 +349,7 @@ def follow(target_id):
 #Endpoint for retrieving the number of followers
 
 @app.route('/api/v1/users/<user_id>/follow', methods=['GET'])
-@jwt_required()  # This decorator requires JWT authentication
+#@jwt_required()  # This decorator requires JWT authentication
 def getFollowers(user_id):
     
     if request.method == 'GET':

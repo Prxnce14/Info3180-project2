@@ -68,11 +68,12 @@
     }
 
     function follow() {
+        let user_id = localStorage.getItem('user_id');
         let formData = new FormData()
         formData.append('target_id', userDetails.value.id)
         formData.append('user_id', userId)
 
-        fetch(`/api/v1/users/${userDetails.value.id}/follow`, {
+        fetch("/api/v1/users/" + user_id + "/follow", {
             method: 'POST',
             body: formData,
             headers: {
@@ -107,7 +108,7 @@
         :followers="followers" 
         :follow="follow" 
         :posts="posts" 
-        :canFollow="false" 
+        :canFollow="true" 
         :isFollowed="false"
         :firstname="userDetails?.firstname || ''"
         :lastname="userDetails?.lastname || ''"
